@@ -3,10 +3,12 @@ extends Node3D
 const PlayerScript = preload("res://scripts/player.gd")
 const ZombieScript = preload("res://scripts/zombie.gd")
 const HUDScript = preload("res://scripts/hud.gd")
+const PickupScript = preload("res://scripts/pickup.gd")
 
 var player
 var hud
 var zombies: Array = []
+var pickups: Array = []
 var wave := 0
 var score := 0
 var spawn_left := 0
@@ -38,6 +40,7 @@ func start_game() -> void:
 	score = 0
 	player.reset_player()
 	player.global_position = Vector3(18, 0.1, 18)
+	_spawn_pickups()
 	game_started = true
 	_next_wave()
 	hud.set_game_visible(true)
@@ -71,6 +74,25 @@ func _next_wave() -> void:
 	player.add_ammo(1, 25)
 	player.add_ammo(2, 4)
 	hud.show_banner("HORDA %d" % wave)
+
+func _spawn_pickups() -> void:
+	for old in pickups:
+		if is_instance_valid(old):
+			old.queue_free()
+	pickups.clear()
+	var points := [
+		[Vector3(-4, 0.15, 4), "ammo"], [Vector3(4, 0.15, 4), "med"],
+		[Vector3(-18, 0.15, 30), "ammo"], [Vector3(18, 0.15, -30), "med"],
+		[Vector3(-35, 0.15, 18), "ammo"], [Vector3(35, 0.15, -18), "ammo"],
+		[Vector3(0, 0.15, 38), "med"]
+	]
+	for item in points:
+		var pickup = PickupScript.new()
+		pickup.pickup_type = item[1]
+		pickup.target_player = player
+		add_child(pickup)
+		pickup.global_position = item[0]
+		pickups.append(pickup)
 
 func _spawn_zombie() -> void:
 	var z = ZombieScript.new()

@@ -77,13 +77,22 @@ func _spawn_zombie() -> void:
 	z.name = "Zombie_%d" % (wave * 100 + spawn_left)
 	add_child(z)
 	z.target = player
-	var angle := rng.randf_range(0.0, TAU)
-	var distance := rng.randf_range(24.0, 42.0)
-	z.global_position = Vector3(
-		clampf(player.global_position.x + cos(angle) * distance, -48.0, 48.0),
-		0.1,
-		clampf(player.global_position.z + sin(angle) * distance, -48.0, 48.0)
-	)
+	# A lógica original faz as hordas nascerem nas ruas, não dentro das casas.
+	var lane := rng.randi_range(0, 3)
+	var along := rng.randf_range(-47.0, 47.0)
+	var offset := rng.randf_range(-2.0, 2.0)
+	var spawn_point := Vector3.ZERO
+	if lane == 0:
+		spawn_point = Vector3(-18.0 + offset, 0.1, along)
+	elif lane == 1:
+		spawn_point = Vector3(18.0 + offset, 0.1, along)
+	elif lane == 2:
+		spawn_point = Vector3(along, 0.1, -18.0 + offset)
+	else:
+		spawn_point = Vector3(along, 0.1, 18.0 + offset)
+	if spawn_point.distance_to(player.global_position) < 20.0:
+		spawn_point += Vector3(24.0, 0.0, 24.0)
+	z.global_position = spawn_point
 	z.died.connect(_on_zombie_killed)
 	zombies.append(z)
 

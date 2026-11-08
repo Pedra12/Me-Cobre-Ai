@@ -376,7 +376,7 @@ func _build_distant_blocks(mat: Material) -> void:
 		var angle := float(i) * TAU / 24.0
 		var dist := 63.0
 		var p := Vector3(cos(angle) * dist, 0.0, sin(angle) * dist)
-		var model_path := root + models[i % models.size()]
+		var model_path: String = root + models[i % models.size()]
 		if not _instantiate_asset(model_path, p, 1.45, -angle + PI):
 			var size := Vector3(12.0, rng.randf_range(18.0, 35.0), 12.0)
 			_box(self, size, p + Vector3(0, size.y / 2.0, 0), mat, false)

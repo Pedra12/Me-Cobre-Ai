@@ -44,6 +44,23 @@ jobs:
             "ndk;28.1.13356709" \
             "cmake;3.10.2.4988404"
 
+      - name: Download CC0 environment models and 1K PBR materials
+        run: |
+          set -euo pipefail
+          MODEL_DIR="godot/assets/kenney/Models/GLB format"
+          mkdir -p "$MODEL_DIR/Textures"
+          BASE="https://raw.githubusercontent.com/petroulacl/fps-buildings-env-kit/main"
+          for model in building-type-a building-type-b building-type-c building-type-d building-type-e building-type-f tree-large tree-small; do
+            curl -fsSL --retry 3 "$BASE/buildings/kenney-city-kit-suburban/Models/GLB%20format/$model.glb" -o "$MODEL_DIR/$model.glb"
+          done
+          curl -fsSL --retry 3 "$BASE/buildings/kenney-city-kit-suburban/Models/GLB%20format/Textures/colormap.png" -o "$MODEL_DIR/Textures/colormap.png"
+          mkdir -p godot/assets/pbr
+          for asset in Asphalt021 Bricks066 Concrete012 Grass004; do
+            mkdir -p "godot/assets/pbr/$asset"
+            curl -fsSL --retry 3 "https://ambientcg.com/get?file=${asset}_1K-JPG.zip" -o "/tmp/${asset}.zip"
+            unzip -oq "/tmp/${asset}.zip" -d "godot/assets/pbr/$asset"
+          done
+
       - name: Import Godot Android export templates and build APK
         id: export
         uses: firebelley/godot-export@v8.0.0

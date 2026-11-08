@@ -20,6 +20,7 @@ var fire_timer := 0.0
 var jump_requested := false
 var camera: Camera3D
 var gun_root: Node3D
+var weapon_variants: Array[Node3D] = []
 var muzzle_flash: OmniLight3D
 var recoil := 0.0
 
@@ -76,31 +77,73 @@ func _build_weapon() -> void:
 	gun_root = Node3D.new()
 	gun_root.position = Vector3(0.28, -0.23, -0.48)
 	camera.add_child(gun_root)
-	var receiver := MeshInstance3D.new()
-	var receiver_mesh := BoxMesh.new()
-	receiver_mesh.size = Vector3(0.13, 0.13, 0.52)
-	receiver.mesh = receiver_mesh
-	receiver.material_override = _material(Color(0.09, 0.10, 0.105))
-	gun_root.add_child(receiver)
-	var barrel := MeshInstance3D.new()
-	var barrel_mesh := CylinderMesh.new()
-	barrel_mesh.top_radius = 0.035
-	barrel_mesh.bottom_radius = 0.035
-	barrel_mesh.height = 0.42
-	barrel_mesh.radial_segments = 12
-	barrel.mesh = barrel_mesh
-	barrel.rotation.x = PI / 2.0
-	barrel.position.z = -0.42
-	barrel.material_override = _material(Color(0.055, 0.06, 0.065))
-	gun_root.add_child(barrel)
-	var grip := MeshInstance3D.new()
-	var grip_mesh := BoxMesh.new()
-	grip_mesh.size = Vector3(0.11, 0.24, 0.13)
-	grip.mesh = grip_mesh
-	grip.position = Vector3(0, -0.15, 0.12)
-	grip.material_override = _material(Color(0.16, 0.12, 0.08))
-	gun_root.add_child(grip)
-	# Braços em primeira pessoa, como no original, presos à câmera para não perder a arma ao olhar.
+	var receiver_sizes := [Vector3(0.11, 0.12, 0.30), Vector3(0.13, 0.14, 0.58), Vector3(0.14, 0.14, 0.68)]
+	var barrel_lengths := [0.22, 0.55, 0.62]
+	var colors := [Color(0.12, 0.13, 0.14), Color(0.075, 0.085, 0.09), Color(0.20, 0.16, 0.12)]
+	for i in range(3):
+		var variant := Node3D.new()
+		gun_root.add_child(variant)
+		var receiver := MeshInstance3D.new()
+		var receiver_mesh := BoxMesh.new()
+		receiver_mesh.size = receiver_sizes[i]
+		receiver.mesh = receiver_mesh
+		var receiver_mat := _material(colors[i])
+		receiver_mat.metallic = 0.72
+		receiver_mat.roughness = 0.34
+		receiver.material_override = receiver_mat
+		variant.add_child(receiver)
+		var barrel := MeshInstance3D.new()
+		var barrel_mesh := CylinderMesh.new()
+		barrel_mesh.top_radius = 0.027 if i != 2 else 0.038
+		barrel_mesh.bottom_radius = barrel_mesh.top_radius
+		barrel_mesh.height = barrel_lengths[i]
+		barrel_mesh.radial_segments = 12
+		barrel.mesh = barrel_mesh
+		barrel.rotation.x = PI / 2.0
+		barrel.position.z = -receiver_sizes[i].z * 0.5 - barrel_lengths[i] * 0.5
+		barrel.material_override = _material(Color(0.045, 0.05, 0.055))
+		variant.add_child(barrel)
+		var grip := MeshInstance3D.new()
+		var grip_mesh := BoxMesh.new()
+		grip_mesh.size = Vector3(0.10, 0.22, 0.13) if i == 0 else Vector3(0.12, 0.24, 0.15)
+		grip.mesh = grip_mesh
+		grip.position = Vector3(0, -0.15, 0.07)
+		grip.material_override = _material(Color(0.16, 0.12, 0.08))
+		variant.add_child(grip)
+		if i > 0:
+			var magazine := MeshInstance3D.new()
+			var magazine_mesh := BoxMesh.new()
+			magazine_mesh.size = Vector3(0.085, 0.24 if i == 1 else 0.13, 0.13)
+			magazine.mesh = magazine_mesh
+			magazine.position = Vector3(0, -0.18, 0.05)
+			magazine.material_override = _material(Color(0.10, 0.105, 0.09))
+			variant.add_child(magazine)
+		if i == 1:
+			var stock := MeshInstance3D.new()
+			var stock_mesh := BoxMesh.new()
+			stock_mesh.size = Vector3(0.12, 0.13, 0.28)
+			stock.mesh = stock_mesh
+			stock.position.z = 0.38
+			stock.material_override = _material(Color(0.17, 0.13, 0.09))
+			variant.add_child(stock)
+		if i == 2:
+			var pump := MeshInstance3D.new()
+			var pump_mesh := BoxMesh.new()
+			pump_mesh.size = Vector3(0.18, 0.12, 0.24)
+			pump.mesh = pump_mesh
+			pump.position = Vector3(0, -0.07, -0.10)
+			pump.material_override = _material(Color(0.23, 0.17, 0.11))
+			variant.add_child(pump)
+		var sight := MeshInstance3D.new()
+		var sight_mesh := BoxMesh.new()
+		sight_mesh.size = Vector3(0.045, 0.055, 0.07)
+		sight.mesh = sight_mesh
+		sight.position = Vector3(0, 0.085, -receiver_sizes[i].z * 0.30)
+		sight.material_override = _material(Color(0.035, 0.04, 0.04))
+		variant.add_child(sight)
+		variant.visible = i == weapon_index
+		weapon_variants.append(variant)
+	# Braços em primeira pessoa, presos à câmera para acompanhar a mira.
 	var arm_mat := _material(Color(0.30, 0.34, 0.25))
 	for side in [-1.0, 1.0]:
 		var arm := MeshInstance3D.new()
@@ -117,7 +160,7 @@ func _build_weapon() -> void:
 	muzzle_flash.light_color = Color(1.0, 0.52, 0.12)
 	muzzle_flash.light_energy = 0.0
 	muzzle_flash.omni_range = 4.0
-	muzzle_flash.position.z = -0.68
+	muzzle_flash.position.z = -0.75
 	camera.add_child(muzzle_flash)
 
 func _setup_input() -> void:
@@ -176,7 +219,9 @@ func select_weapon(index: int) -> void:
 func _update_weapon_visibility() -> void:
 	if not is_inside_tree() or gun_root == null:
 		return
-	gun_root.scale = Vector3.ONE * (1.0 + weapon_index * 0.04)
+	for i in range(weapon_variants.size()):
+		weapon_variants[i].visible = i == weapon_index
+	gun_root.scale = Vector3.ONE
 	gun_root.position.y = -0.23 - weapon_index * 0.015
 
 func request_reload() -> void:

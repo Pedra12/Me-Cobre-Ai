@@ -171,6 +171,42 @@ func _mat(color: Color, roughness := 0.9, metallic := 0.0) -> StandardMaterial3D
 	m.metallic = metallic
 	return m
 
+func _pbr_mat(asset: String, tint: Color, tile: float) -> StandardMaterial3D:
+	var material := _mat(tint, 1.0, 0.0)
+	var folder := "res://assets/pbr/%s/" % asset
+	var prefix := folder + asset + "_1K-JPG"
+	var color_path := prefix + "_Color.jpg"
+	var normal_path := prefix + "_NormalGL.jpg"
+	var rough_path := prefix + "_Roughness.jpg"
+	var ao_path := prefix + "_AmbientOcclusion.jpg"
+	if ResourceLoader.exists(color_path):
+		material.albedo_texture = load(color_path)
+	if ResourceLoader.exists(normal_path):
+		material.normal_enabled = true
+		material.normal_texture = load(normal_path)
+	if ResourceLoader.exists(rough_path):
+		material.roughness_texture = load(rough_path)
+	if ResourceLoader.exists(ao_path):
+		material.ao_enabled = true
+		material.ao_texture = load(ao_path)
+	material.uv1_scale = Vector3(tile, tile, 1.0)
+	return material
+
+func _instantiate_asset(path: String, pos: Vector3, scale_factor := 1.0, rotation_y := 0.0) -> bool:
+	if not ResourceLoader.exists(path):
+		return false
+	var packed := load(path) as PackedScene
+	if packed == null:
+		return false
+	var instance := packed.instantiate() as Node3D
+	if instance == null:
+		return false
+	instance.position = pos
+	instance.scale = Vector3.ONE * scale_factor
+	instance.rotation.y = rotation_y
+	add_child(instance)
+	return true
+
 func _box(parent: Node3D, size: Vector3, pos: Vector3, material: Material, solid := true) -> Node3D:
 	var holder: Node3D
 	if solid:
@@ -195,12 +231,12 @@ func _box(parent: Node3D, size: Vector3, pos: Vector3, material: Material, solid
 	return holder
 
 func _build_city() -> void:
-	var asphalt := _mat(Color(0.105, 0.115, 0.12))
-	var road := _mat(Color(0.075, 0.083, 0.09))
-	var concrete := _mat(Color(0.24, 0.25, 0.23))
-	var grass := _mat(Color(0.075, 0.13, 0.065))
-	var brick_a := _mat(Color(0.29, 0.19, 0.15))
-	var brick_b := _mat(Color(0.22, 0.25, 0.24))
+	var asphalt := _pbr_mat("Asphalt021", Color(0.72, 0.74, 0.76), 22.0)
+	var road := _pbr_mat("Asphalt021", Color(0.52, 0.55, 0.58), 12.0)
+	var concrete := _pbr_mat("Concrete012", Color(0.72, 0.72, 0.68), 4.0)
+	var grass := _pbr_mat("Grass004", Color(0.68, 0.78, 0.62), 15.0)
+	var brick_a := _pbr_mat("Bricks066", Color(0.82, 0.72, 0.68), 3.5)
+	var brick_b := _pbr_mat("Concrete012", Color(0.70, 0.76, 0.74), 3.0)
 	var roof_mat := _mat(Color(0.10, 0.12, 0.12))
 	var wood := _mat(Color(0.25, 0.16, 0.095))
 	var metal := _mat(Color(0.12, 0.15, 0.16), 0.38, 0.72)
@@ -275,6 +311,9 @@ func _build_fountain(mat: Material) -> void:
 	_box(self, Vector3(0.55, 1.6, 0.55), Vector3(0, 1.35, 0), mat)
 
 func _build_tree(p: Vector3) -> void:
+	var tree_path := "res://assets/kenney/Models/GLB format/tree-large.glb"
+	if _instantiate_asset(tree_path, p, 1.55):
+		return
 	var trunk := _mat(Color(0.19, 0.12, 0.075))
 	_box(self, Vector3(0.42, 3.6, 0.42), p + Vector3(0, 1.8, 0), trunk)
 	for i in range(3):
@@ -328,9 +367,16 @@ func _build_boundary(mat: Material) -> void:
 		_box(self, item[0], item[1], mat)
 
 func _build_distant_blocks(mat: Material) -> void:
+	var models := [
+		"building-type-a.glb", "building-type-b.glb", "building-type-c.glb",
+		"building-type-d.glb", "building-type-e.glb", "building-type-f.glb"
+	]
+	var root := "res://assets/kenney/Models/GLB format/"
 	for i in range(24):
 		var angle := float(i) * TAU / 24.0
 		var dist := 63.0
-		var size := Vector3(12.0, rng.randf_range(18.0, 35.0), 12.0)
-		var p := Vector3(cos(angle) * dist, size.y / 2.0, sin(angle) * dist)
-		_box(self, size, p, mat, false)
+		var p := Vector3(cos(angle) * dist, 0.0, sin(angle) * dist)
+		var model_path := root + models[i % models.size()]
+		if not _instantiate_asset(model_path, p, 1.45, -angle + PI):
+			var size := Vector3(12.0, rng.randf_range(18.0, 35.0), 12.0)
+			_box(self, size, p + Vector3(0, size.y / 2.0, 0), mat, false)

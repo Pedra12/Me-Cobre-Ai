@@ -97,8 +97,14 @@ func _spawn_pickups() -> void:
 func _spawn_zombie() -> void:
 	var z = ZombieScript.new()
 	z.name = "Zombie_%d" % (wave * 100 + spawn_left)
-	add_child(z)
+	var roll := rng.randf()
+	if wave >= 4 and roll < 0.08 + wave * 0.01:
+		z.zombie_type = "brute"
+	elif wave >= 2 and roll < 0.25 + wave * 0.04:
+		z.zombie_type = "runner"
+	z.wave_level = wave
 	z.target = player
+	add_child(z)
 	# A lógica original faz as hordas nascerem nas ruas, não dentro das casas.
 	var lane := rng.randi_range(0, 3)
 	var along := rng.randf_range(-47.0, 47.0)
@@ -113,7 +119,7 @@ func _spawn_zombie() -> void:
 	else:
 		spawn_point = Vector3(along, 0.1, 18.0 + offset)
 	if spawn_point.distance_to(player.global_position) < 20.0:
-		spawn_point += Vector3(24.0, 0.0, 24.0)
+		spawn_point = -spawn_point
 	z.global_position = spawn_point
 	z.died.connect(_on_zombie_killed)
 	zombies.append(z)

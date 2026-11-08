@@ -54,6 +54,12 @@ jobs:
             curl -fsSL --retry 3 "$BASE/buildings/kenney-city-kit-suburban/Models/GLB%20format/$model.glb" -o "$MODEL_DIR/$model.glb"
           done
           curl -fsSL --retry 3 "$BASE/buildings/kenney-city-kit-suburban/Models/GLB%20format/Textures/colormap.png" -o "$MODEL_DIR/Textures/colormap.png"
+          ZOMBIE_DIR="godot/assets/zombies"
+          mkdir -p "$ZOMBIE_DIR"
+          ZBASE="https://raw.githubusercontent.com/agentkaerf/FreeModels/main/Zombie%20Apocalypse%20Kit%20-%20March%202024/Characters/glTF"
+          for model in Zombie_Arm Zombie_Basic Zombie_Chubby Zombie_Ribcage; do
+            curl -fsSL --retry 3 "$ZBASE/$model.gltf" -o "$ZOMBIE_DIR/$model.gltf"
+          done
           mkdir -p godot/assets/pbr
           for asset in Asphalt021 Bricks066 Concrete012 Grass004; do
             mkdir -p "godot/assets/pbr/$asset"

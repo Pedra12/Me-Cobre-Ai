@@ -179,9 +179,19 @@ func _make_menu(root: Control) -> void:
 
 func show_menu() -> void:
 	menu.show()
+	if menu.get_child_count() > 0 and menu.get_child(0) is Label:
+		menu.get_child(0).text = "COMBATE ZOMBIE 3D"
+
+func show_game_over() -> void:
+	menu.show()
+	if menu.get_child_count() > 0 and menu.get_child(0) is Label:
+		menu.get_child(0).text = "VOCÊ FOI DERROTADO"
 
 func set_game_visible(value: bool) -> void:
-	menu.hide() if value else menu.show()
+	if value:
+		menu.hide()
+	else:
+		menu.show()
 
 func update_status(health: float, wave: int, score: int, count: int) -> void:
 	health_label.text = "VIDA %d" % int(health)
@@ -210,6 +220,7 @@ func _on_aim_up() -> void:
 func _pause_game() -> void:
 	get_tree().paused = true
 	var popup := AcceptDialog.new()
+	popup.process_mode = Node.PROCESS_MODE_ALWAYS
 	popup.dialog_text = "Partida pausada"
 	add_child(popup)
 	popup.confirmed.connect(func(): get_tree().paused = false)

@@ -128,6 +128,8 @@ func _build_ui() -> void:
 	var pause := _make_button(root, "Ⅱ", Vector2(-64, 18), Vector2(48, 48), func(): _pause_game(), func(): pass, false)
 	pause.anchor_left = 1.0
 	pause.anchor_right = 1.0
+	pause.anchor_top = 0.0
+	pause.anchor_bottom = 0.0
 	pause.offset_left = -64
 	pause.offset_right = -16
 	pause.offset_top = 18

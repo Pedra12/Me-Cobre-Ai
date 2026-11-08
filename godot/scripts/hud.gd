@@ -1,7 +1,7 @@
 extends CanvasLayer
 
-var player: Node
-var game: Node
+var player
+var game
 var health_label: Label
 var ammo_label: Label
 var wave_label: Label

@@ -12,6 +12,11 @@ var zombie_type := "walker"
 var wave_level := 1
 var dead := false
 var visual_root: Node3D
+var left_leg: MeshInstance3D
+var right_leg: MeshInstance3D
+var left_arm: MeshInstance3D
+var right_arm: MeshInstance3D
+var walk_phase := 0.0
 
 func _ready() -> void:
 	collision_layer = 1
@@ -78,15 +83,15 @@ func _build_model() -> void:
 	var leg := CapsuleMesh.new()
 	leg.radius = 0.105
 	leg.height = 0.78
-	_part(visual_root, leg, Vector3(-0.16, 0.43, 0), pants)
-	_part(visual_root, leg, Vector3(0.16, 0.43, 0), pants)
+	left_leg = _part(visual_root, leg, Vector3(-0.16, 0.43, 0), pants)
+	right_leg = _part(visual_root, leg, Vector3(0.16, 0.43, 0), pants)
 	var arm := CapsuleMesh.new()
 	arm.radius = 0.09
 	arm.height = 0.72
-	var left := _part(visual_root, arm, Vector3(-0.40, 1.05, -0.06), skin)
-	left.rotation.z = -0.32
-	var right := _part(visual_root, arm, Vector3(0.40, 1.05, -0.06), skin)
-	right.rotation.z = 0.32
+	left_arm = _part(visual_root, arm, Vector3(-0.40, 1.05, -0.06), skin)
+	left_arm.rotation.z = -0.32
+	right_arm = _part(visual_root, arm, Vector3(0.40, 1.05, -0.06), skin)
+	right_arm.rotation.z = 0.32
 	var blood := _mat(Color(0.18, 0.015, 0.012))
 	var stain := SphereMesh.new()
 	stain.radius = 0.12
@@ -130,3 +135,10 @@ func _physics_process(delta: float) -> void:
 		velocity.x *= 0.25
 		velocity.z *= 0.25
 	move_and_slide()
+	var moving := distance > 1.25 and is_on_floor()
+	walk_phase += delta * (move_speed * 2.6 if moving else 1.4)
+	var swing := sin(walk_phase) * (0.62 if moving else 0.045)
+	left_leg.rotation.x = swing
+	right_leg.rotation.x = -swing
+	left_arm.rotation.x = -swing * 0.72 - (0.75 if distance <= 1.25 else 0.0)
+	right_arm.rotation.x = swing * 0.72 - (0.75 if distance <= 1.25 else 0.0)

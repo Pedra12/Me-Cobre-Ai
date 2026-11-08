@@ -59,6 +59,16 @@ jobs:
             mkdir -p "godot/assets/pbr/$asset"
             curl -fsSL --retry 3 "https://ambientcg.com/get?file=${asset}_1K-JPG.zip" -o "/tmp/${asset}.zip"
             unzip -oq "/tmp/${asset}.zip" -d "godot/assets/pbr/$asset"
+            mkdir -p "/tmp/${asset}_maps"
+            for map in Color NormalGL Roughness AmbientOcclusion; do
+              source_file="$(find "godot/assets/pbr/$asset" -type f -name "${asset}_1K-JPG_${map}.jpg" -print -quit || true)"
+              if [ -n "$source_file" ]; then cp "$source_file" "/tmp/${asset}_maps/"; fi
+            done
+            rm -rf "godot/assets/pbr/$asset"
+            mkdir -p "godot/assets/pbr/$asset"
+            if compgen -G "/tmp/${asset}_maps/*.jpg" > /dev/null; then
+              cp /tmp/${asset}_maps/*.jpg "godot/assets/pbr/$asset/"
+            fi
           done
 
       - name: Import Godot Android export templates and build APK

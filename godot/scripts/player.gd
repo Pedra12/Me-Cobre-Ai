@@ -1,7 +1,5 @@
 extends CharacterBody3D
 
-signal zombie_killed(points: int)
-
 const WEAPONS := [
 	{"name":"Pistola", "damage":25.0, "range":40.0, "rate":0.30, "mag":12, "reserve":60, "reload":1.5, "pellets":1},
 	{"name":"Rifle", "damage":20.0, "range":50.0, "rate":0.10, "mag":30, "reserve":120, "reload":2.0, "pellets":1},
@@ -100,6 +98,19 @@ func _build_weapon() -> void:
 	grip.position = Vector3(0, -0.15, 0.12)
 	grip.material_override = _material(Color(0.16, 0.12, 0.08))
 	gun_root.add_child(grip)
+	# Braços em primeira pessoa, como no original, presos à câmera para não perder a arma ao olhar.
+	var arm_mat := _material(Color(0.30, 0.34, 0.25))
+	for side in [-1.0, 1.0]:
+		var arm := MeshInstance3D.new()
+		var arm_mesh := CapsuleMesh.new()
+		arm_mesh.radius = 0.095
+		arm_mesh.height = 0.62
+		arm.mesh = arm_mesh
+		arm.rotation.x = PI / 2.0
+		arm.rotation.z = side * 0.22
+		arm.position = Vector3(side * 0.22, -0.34, -0.24)
+		arm.material_override = arm_mat
+		camera.add_child(arm)
 	muzzle_flash = OmniLight3D.new()
 	muzzle_flash.light_color = Color(1.0, 0.52, 0.12)
 	muzzle_flash.light_energy = 0.0
@@ -244,5 +255,3 @@ func _fire_weapon() -> void:
 			if collider.has_method("take_damage"):
 				var dealt := float(data.damage)
 				collider.take_damage(dealt)
-				if collider.current_health <= 0.0:
-					zombie_killed.emit(100)

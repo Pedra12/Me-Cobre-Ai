@@ -38,7 +38,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	rotate_y(delta * 0.7)
 
-func _on_body_entered(body: Node3D) -> void:
+func _on_body_entered(body) -> void:
 	if body != target_player:
 		return
 	if pickup_type == "ammo":

@@ -39,6 +39,7 @@ func _ready() -> void:
 	body.radius = 0.34
 	body.height = 1.75
 	body_mesh.mesh = body
+	body_mesh.visible = false # FPS: evita que o próprio tronco cubra a câmera.
 	body_mesh.position.y = 0.9
 	body_mesh.material_override = _material(Color(0.20, 0.26, 0.18))
 	add_child(body_mesh)
@@ -47,6 +48,7 @@ func _ready() -> void:
 	head_mesh.radius = 0.19
 	head_mesh.height = 0.38
 	head.mesh = head_mesh
+	head.visible = false
 	head.position.y = 1.82
 	head.material_override = _material(Color(0.48, 0.37, 0.29))
 	add_child(head)

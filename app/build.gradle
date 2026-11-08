@@ -1,0 +1,13 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'com.pedra12.combatezombie3d'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'com.pedra12.combatezombie3d'
+        minSdk 23
+        targetSdk 28
+        versionCode 1
+        versionName '1.0'
+    }
+}

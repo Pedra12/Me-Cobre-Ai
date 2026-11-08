@@ -29,8 +29,9 @@ func _ready() -> void:
 	mark_mesh.size = Vector3(0.14, 0.04, 0.48) if pickup_type == "med" else Vector3(0.48, 0.04, 0.14)
 	mark.mesh = mark_mesh
 	mark.position.y = 0.76
-	mark.material_override = StandardMaterial3D.new()
-	mark.material_override.albedo_color = Color(1.0, 0.92, 0.70)
+	var mark_material := StandardMaterial3D.new()
+	mark_material.albedo_color = Color(1.0, 0.92, 0.70)
+	mark.material_override = mark_material
 	add_child(mark)
 	body_entered.connect(_on_body_entered)
 
@@ -41,9 +42,9 @@ func _on_body_entered(body: Node3D) -> void:
 	if body != target_player:
 		return
 	if pickup_type == "ammo":
-		body.add_ammo(0, 24)
-		body.add_ammo(1, 60)
-		body.add_ammo(2, 12)
+		body.add_ammo(0, 30)
+		body.add_ammo(1, 75)
+		body.add_ammo(2, 15)
 	else:
 		body.heal(40.0)
 	queue_free()

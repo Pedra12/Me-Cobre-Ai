@@ -180,15 +180,15 @@ func _pbr_mat(asset: String, tint: Color, tile: float) -> StandardMaterial3D:
 	var rough_path := prefix + "_Roughness.jpg"
 	var ao_path := prefix + "_AmbientOcclusion.jpg"
 	if ResourceLoader.exists(color_path):
-		material.albedo_texture = load(color_path)
+		material.albedo_texture = load(color_path) as Texture2D
 	if ResourceLoader.exists(normal_path):
 		material.normal_enabled = true
-		material.normal_texture = load(normal_path)
+		material.normal_texture = load(normal_path) as Texture2D
 	if ResourceLoader.exists(rough_path):
-		material.roughness_texture = load(rough_path)
+		material.roughness_texture = load(rough_path) as Texture2D
 	if ResourceLoader.exists(ao_path):
 		material.ao_enabled = true
-		material.ao_texture = load(ao_path)
+		material.ao_texture = load(ao_path) as Texture2D
 	material.uv1_scale = Vector3(tile, tile, 1.0)
 	return material
 

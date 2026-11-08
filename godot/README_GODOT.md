@@ -12,6 +12,16 @@ Este é o início da migração nativa do jogo HTML/Three.js para Godot 4.7.2 es
 - HUD Android com joystick, toque para olhar, tiro, mira, pulo, recarga e troca de arma.
 - Preset Android ARM64 e workflow de APK.
 
+## Recursos gráficos CC0 integrados no APK
+
+O workflow baixa modelos GLB do Kenney City Kit Suburban (via FPS Buildings Environment Kit) e materiais PBR 1K do ambientCG: asfalto, tijolo, concreto e grama. As licenças publicadas pelas fontes são CC0. Os modelos externos são usados como cenário distante e vegetação; as construções abertas com interiores continuam sendo geradas no projeto.
+
+Fontes:
+- Kenney City Kit Suburban: https://kenney.nl/assets/city-kit-suburban
+- Coleção de modelos: https://github.com/petroulacl/fps-buildings-env-kit
+- Materiais PBR ambientCG: https://ambientcg.com/
+- Licença ambientCG: https://docs.ambientcg.com/license/
+
 ## Limites desta etapa
 
 Esta é uma conversão funcional inicial dos sistemas centrais, não uma cópia binária do Three.js. Os modelos atuais são procedurais e servem como placeholders. Ainda faltam importar modelos HD licenciados, texturas PBR dedicadas, animações esqueléticas, áudio, pickups detalhados, minimapa e o modo cooperativo PeerJS (que precisará ser refeito com uma solução de rede compatível com Godot).

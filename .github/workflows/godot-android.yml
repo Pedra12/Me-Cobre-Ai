@@ -61,6 +61,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Combate-Zombie-3D-Godot-Android
-          path: godot/build/CombateZombie3D.apk
+          path: godot/build/Android/CombateZombie3D.apk
           if-no-files-found: error
           retention-days: 14

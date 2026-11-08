@@ -23,7 +23,6 @@ func _ready() -> void:
 	player.name = "Player"
 	add_child(player)
 	player.global_position = Vector3(18, 0.1, 18)
-	player.zombie_killed.connect(_on_zombie_killed)
 	hud = HUDScript.new()
 	add_child(hud)
 	hud.setup(player, self)
@@ -45,6 +44,10 @@ func start_game() -> void:
 
 func _process(delta: float) -> void:
 	if not game_started:
+		return
+	if player.current_health <= 0.0:
+		game_started = false
+		hud.show_game_over()
 		return
 	zombies = zombies.filter(func(z): return is_instance_valid(z) and z.current_health > 0)
 	if spawn_left > 0:

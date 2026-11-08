@@ -2,7 +2,7 @@ extends CharacterBody3D
 
 signal died(points: int)
 
-var target: Node3D
+var target
 var current_health := 50.0
 var move_speed := 1.6
 var attack_damage := 8.0

@@ -4,9 +4,9 @@ const PlayerScript = preload("res://scripts/player.gd")
 const ZombieScript = preload("res://scripts/zombie.gd")
 const HUDScript = preload("res://scripts/hud.gd")
 
-var player: CharacterBody3D
-var hud: CanvasLayer
-var zombies: Array[Node] = []
+var player
+var hud
+var zombies: Array = []
 var wave := 0
 var score := 0
 var spawn_left := 0

@@ -1,5 +1,36 @@
 extends CanvasLayer
 
+class MiniMap extends Control:
+	var actor
+	var game_ref
+	func _draw() -> void:
+		var center := size * 0.5
+		var scale_factor := 0.88
+		draw_rect(Rect2(Vector2.ZERO, size), Color(0.015, 0.025, 0.025, 0.88), true)
+		for lane in [-18.0, 18.0]:
+			var p := center + Vector2(lane, lane) * scale_factor
+			draw_rect(Rect2(Vector2(p.x - 4.4, 0), Vector2(8.8, size.y)), Color(0.22, 0.24, 0.24, 0.95), true)
+			draw_rect(Rect2(Vector2(0, p.y - 4.4), Vector2(size.x, 8.8)), Color(0.22, 0.24, 0.24, 0.95), true)
+		draw_rect(Rect2(center - Vector2(11.4, 11.4), Vector2(22.8, 22.8)), Color(0.08, 0.20, 0.09, 0.95), true)
+		for gx in [-1.0, 0.0, 1.0]:
+			for gz in [-1.0, 0.0, 1.0]:
+				if gx == 0.0 and gz == 0.0:
+					continue
+				for sx in [-1.0, 1.0]:
+					for sz in [-1.0, 1.0]:
+						var world := Vector2(gx * 36.0 + sx * 7.25, gz * 36.0 + sz * 7.25)
+						var pos := center + world * scale_factor - Vector2(4.2, 4.0)
+						draw_rect(Rect2(pos, Vector2(8.4, 8.0)), Color(0.32, 0.29, 0.25, 0.95), true)
+		if game_ref != null:
+			for z in game_ref.zombies:
+				if is_instance_valid(z):
+					var zp := center + Vector2(z.global_position.x, z.global_position.z) * scale_factor
+					draw_circle(zp, 2.2, Color(0.95, 0.12, 0.08))
+		if actor != null:
+			var ap := center + Vector2(actor.global_position.x, actor.global_position.z) * scale_factor
+			draw_circle(ap, 4.2, Color(0.35, 1.0, 0.35))
+			draw_line(ap, ap + Vector2(sin(actor.rotation.y), -cos(actor.rotation.y)) * 9.0, Color(1, 1, 1), 2.0)
+
 var player
 var game
 var health_label: Label
@@ -18,11 +49,16 @@ var joy_center := Vector2.ZERO
 var joy_value := Vector2.ZERO
 var look_last := Vector2.ZERO
 var screen_scale := 1.0
+var minimap: MiniMap
 
-func setup(p: Node, g: Node) -> void:
+func setup(p, g) -> void:
 	player = p
 	game = g
 	_build_ui()
+
+func _process(_delta: float) -> void:
+	if minimap != null:
+		minimap.queue_redraw()
 
 func _build_ui() -> void:
 	var root := Control.new()
@@ -63,6 +99,17 @@ func _build_ui() -> void:
 	joystick.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_style_panel(joystick, Color(0.75, 0.82, 0.78, 0.16), 72)
 	root.add_child(joystick)
+	minimap = MiniMap.new()
+	minimap.actor = player
+	minimap.game_ref = game
+	minimap.anchor_left = 1.0
+	minimap.anchor_right = 1.0
+	minimap.offset_left = -138
+	minimap.offset_right = -18
+	minimap.offset_top = 82
+	minimap.offset_bottom = 202
+	minimap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(minimap)
 	knob = Panel.new()
 	knob.position = Vector2(43, 43)
 	knob.size = Vector2(59, 59)

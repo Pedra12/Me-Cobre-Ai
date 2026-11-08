@@ -9,6 +9,7 @@ var attack_damage := 8.0
 var attack_timer := 0.0
 var stagger_timer := 0.0
 var zombie_type := "walker"
+var wave_level := 1
 var dead := false
 var visual_root: Node3D
 
@@ -23,17 +24,18 @@ func _ready() -> void:
 	shape.position.y = 0.88
 	add_child(shape)
 	_build_model()
-	if randf() < 0.20:
-		zombie_type = "runner"
+	if zombie_type == "runner":
 		current_health = 30.0
 		move_speed = 4.2
 		attack_damage = 6.0
-	elif randf() < 0.08:
-		zombie_type = "brute"
+		scale = Vector3.ONE * 0.90
+	elif zombie_type == "brute":
 		current_health = 320.0
 		move_speed = 1.2
 		attack_damage = 25.0
 		scale = Vector3.ONE * 1.35
+	current_health *= 1.0 + float(wave_level) * 0.12
+	move_speed *= minf(1.0 + float(wave_level) * 0.04, 1.8)
 
 func _mat(color: Color, roughness := 0.9) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()

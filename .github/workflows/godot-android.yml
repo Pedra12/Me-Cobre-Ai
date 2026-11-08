@@ -12,6 +12,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: godot-android-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   export-android:
     name: Export Godot 4.7.2 Android APK

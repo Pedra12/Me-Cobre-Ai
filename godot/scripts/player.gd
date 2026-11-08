@@ -205,6 +205,9 @@ func reset_player() -> void:
 func take_damage(amount: float) -> void:
 	current_health = maxf(0.0, current_health - amount)
 
+func heal(amount: float) -> void:
+	current_health = minf(100.0, current_health + amount)
+
 func _physics_process(delta: float) -> void:
 	var keyboard := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var move := move_input if move_input.length() > 0.05 else keyboard

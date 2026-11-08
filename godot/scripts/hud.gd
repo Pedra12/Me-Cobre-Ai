@@ -180,7 +180,7 @@ func _make_button(parent: Control, text_value: String, offset: Vector2, size: Ve
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(48 if size.x > 70 else 14)
 	b.add_theme_stylebox_override("normal", style)
-	var pressed_style: StyleBoxFlat = style.duplicate()
+	var pressed_style := style.duplicate() as StyleBoxFlat
 	pressed_style.bg_color = Color(0.22, 0.40, 0.20, 0.92)
 	b.add_theme_stylebox_override("pressed", pressed_style)
 	parent.add_child(b)

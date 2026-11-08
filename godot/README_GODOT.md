@@ -8,7 +8,7 @@ Este é o início da migração nativa do jogo HTML/Three.js para Godot 4.7.2 es
 - 32 estruturas com paredes, aberturas de entrada e móveis internos simples.
 - Personagem FPS com câmera, movimentação, mira, pulo e armas.
 - Três classes de arma com carregadores, reserva e recarga.
-- Zumbis perseguidores, dano, tipos walker/runner/brute e hordas progressivas.
+- Zumbis com modelos 3D rigados do Quaternius Zombie Apocalypse Kit e seleção automática de animações idle/walk/attack/hit/death quando disponíveis; fallback procedural, dano, tipos walker/runner/brute e hordas progressivas.
 - HUD Android com joystick, toque para olhar, tiro, mira, pulo, recarga e troca de arma.
 - Preset Android ARM64 e workflow de APK.
 
@@ -19,6 +19,7 @@ O workflow baixa modelos GLB do Kenney City Kit Suburban (via FPS Buildings Envi
 Fontes:
 - Kenney City Kit Suburban: https://kenney.nl/assets/city-kit-suburban
 - Coleção de modelos: https://github.com/petroulacl/fps-buildings-env-kit
+- Modelos e animações Zombie Apocalypse Kit: https://quaternius.com/packs/zombieapocalypsekit.html (espelho de arquivos: https://github.com/agentkaerf/FreeModels)
 - Materiais PBR ambientCG: https://ambientcg.com/
 - Licença ambientCG: https://docs.ambientcg.com/license/
 
